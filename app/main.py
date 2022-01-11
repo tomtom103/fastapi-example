@@ -4,6 +4,8 @@ from fastapi import FastAPI
 
 app = FastAPI()
 
+# WARNING: Cannot use async if calling another service (database, API, file system, etc.)
+
 @app.get("/")
 async def read_root():
     return {"Hello": "World"}
