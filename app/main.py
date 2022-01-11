@@ -3,9 +3,14 @@ import json
 from concurrent.futures.process import ProcessPoolExecutor
 from typing import Optional
 
-from fastapi import FastAPI
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+
+from app.connection_manager import ConnectionManager
 
 app = FastAPI()
+
+# Manager allows us to handle websocket requests coming from multiple clients
+manager = ConnectionManager()
 
 def cpu_intensive_fn(*args):
     return f"Hello from async endpoint, received: {json.dumps(*args)}"
@@ -39,3 +44,15 @@ async def test_endpoint():
     random_args = { "a": 1, "b": 2, "c": 3 }
     res = await run_in_process(cpu_intensive_fn, random_args)
     return {"result": res}
+
+# Example of a websocket endpoint
+@app.websocket("/ws/{client_id}")
+async def websocket_endpoint(websocket: WebSocket, client_id: int):
+    await manager.connect(websocket)
+    try:
+        data = await websocket.receive_text()
+        await manager.send_personal_message(f"You wrote: {data}", websocket)
+        await manager.broadcast(f"Client #{client_id} says: {data}")
+    except WebSocketDisconnect:
+        manager.disconnect(websocket)
+        await manager.broadcast(f"Client {client_id} disconnected")
