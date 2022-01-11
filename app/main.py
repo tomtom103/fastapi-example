@@ -7,6 +7,9 @@ from fastapi import FastAPI
 
 app = FastAPI()
 
+def cpu_intensive_fn(*args):
+    return f"Hello from async endpoint, received: {json.dumps(*args)}"
+
 async def run_in_process(fn, *args):
     loop = asyncio.get_event_loop()
     return await loop.run_in_executor(app.state.executor, fn, *args) # wait and return result
@@ -29,8 +32,10 @@ async def read_root():
 async def read_item(item_id: int, q: Optional[str] = None):
     return {"item_id": item_id, "q": q}
 
+# Note to self: NO LAMBDA FUNCTIONS!!!!!!!!
+# ProcessPoolExecutor cant pickle lambdas
 @app.get("/async-endpoint")
 async def test_endpoint():
     random_args = { "a": 1, "b": 2, "c": 3 }
-    res = await run_in_process(lambda x: f"Hello from async endpoint, received: {json.dumps(x)}", random_args)
+    res = await run_in_process(cpu_intensive_fn, random_args)
     return {"result": res}
