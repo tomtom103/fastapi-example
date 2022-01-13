@@ -32,11 +32,13 @@ class LoggingConfig(BaseModel):
         "app": {"handlers": ["default"], "level": LOG_LEVEL},
     }
 
+
 class Settings(BaseSettings):
     # FastAPI settings
 
     BASE_URL = "http://localhost:5000"
     USE_NGROK = os.environ.get("USE_NGROK") is not None
+
 
 dictConfig(LoggingConfig().dict())
 logger = logging.getLogger("app")
