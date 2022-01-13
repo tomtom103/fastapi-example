@@ -29,7 +29,6 @@ async def run_in_process(fn, *args):
 @app.on_event("startup")
 async def startup():
     app.state.executor = ProcessPoolExecutor()
-    logger.debug("Hello World!")
 
 @app.on_event("shutdown")
 async def on_shutdown():
