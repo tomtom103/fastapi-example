@@ -1,13 +1,20 @@
+import os
+import sys
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import asyncio
 import json
 from concurrent.futures.process import ProcessPoolExecutor
 from typing import Optional
-
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 
+from app.config import Settings, logger
 from app.connection_manager import ConnectionManager
 
-app = FastAPI()
+settings = Settings()
+
+app = FastAPI(debug=settings.USE_NGROK)
 
 # Manager allows us to handle websocket requests coming from multiple clients
 manager = ConnectionManager()
@@ -22,6 +29,7 @@ async def run_in_process(fn, *args):
 @app.on_event("startup")
 async def startup():
     app.state.executor = ProcessPoolExecutor()
+    logger.debug("Hello World!")
 
 @app.on_event("shutdown")
 async def on_shutdown():
