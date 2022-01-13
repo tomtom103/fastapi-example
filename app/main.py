@@ -7,9 +7,10 @@ import asyncio
 import json
 from concurrent.futures.process import ProcessPoolExecutor
 from typing import Optional
+
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 
-from app.config import Settings, logger
+from app.config import Settings
 from app.connection_manager import ConnectionManager
 
 settings = Settings()
@@ -63,3 +64,4 @@ async def websocket_endpoint(websocket: WebSocket, client_id: int):
     except WebSocketDisconnect:
         manager.disconnect(websocket)
         await manager.broadcast(f"Client {client_id} disconnected")
+

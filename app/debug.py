@@ -1,8 +1,9 @@
 import sys
-import uvicorn
 
-from main import app, settings
+import uvicorn
 from config import logger
+from main import settings
+
 
 def start_ngrok():
     from pyngrok import ngrok

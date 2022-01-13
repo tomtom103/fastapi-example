@@ -1,8 +1,9 @@
-import os
 import logging
-
+import os
 from logging.config import dictConfig
+
 from pydantic import BaseModel, BaseSettings
+
 
 class LoggingConfig(BaseModel):
     """Logging configuration to be set for the server"""

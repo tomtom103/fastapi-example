@@ -20,3 +20,4 @@ class ConnectionManager:
     async def broadcast(self, data: str) -> None:
         for connection in self.active_connections:
             await connection.send_text(data)
+
