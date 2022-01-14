@@ -1,8 +1,7 @@
 import logging
-import os
 from logging.config import dictConfig
 
-from pydantic import BaseModel, BaseSettings
+from pydantic import BaseModel
 
 
 class LoggingConfig(BaseModel):
@@ -31,13 +30,6 @@ class LoggingConfig(BaseModel):
     loggers = {
         "app": {"handlers": ["default"], "level": LOG_LEVEL},
     }
-
-
-class Settings(BaseSettings):
-    # FastAPI settings
-
-    BASE_URL = "http://localhost:5000"
-    USE_NGROK = os.environ.get("USE_NGROK") is not None
 
 
 dictConfig(LoggingConfig().dict())
