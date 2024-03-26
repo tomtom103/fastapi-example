@@ -37,3 +37,17 @@ requirements-dev.txt: pyproject.toml requirements.txt | .venv
 
 .PHONY: dev
 dev: .venv/sentinel
+
+.PHONY: build
+build: | .venv
+	.venv/bin/pip install build
+	.venv/bin/python -m build .
+
+.PHONY: lint
+lint: | dev
+	.venv/bin/mypy
+
+.PHONY: format
+format: | dev
+	.venv/bin/python -m black src tests
+	.venv/bin/ruff check --fix
