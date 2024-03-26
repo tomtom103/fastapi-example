@@ -1,0 +1,52 @@
+[build-system]
+requires = [ "setuptools", "setuptools_scm" ]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fastapi_example"
+dynamic = ["version", "readme"]
+description = "Production-ready API template"
+authors = [ { name = "Thomas Caron", email = "thomas.caron00@gmail.com" } ]
+requires-python = ">=3.10,<4"
+dependencies = [
+    "fastapi[all]",
+    "httpx",
+    "pydantic",
+    "pydantic-settings",
+    "uvicorn[standard]",
+    "passlib[bcrypt]",
+    "python-jose",
+    "python-multipart",
+]
+
+[project.optional-dependencies]
+test = [
+    # testing
+    "pytest",
+    "pytest-cov",
+    "pytest-mock",
+    # lintng / formatting
+    "black",
+    "ruff",
+    # type-checking
+    "mypy",
+    # type stubs / typeshed
+    "types-python-jose",
+    "types-passlib",
+]
+
+cli = [
+    "typer>=0.9,<1"
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.mypy]
+files = ["src", "tests"]
+strict = true
+
+[tool.setuptools_scm]
+
+[tool.setuptools.dynamic]
+readme = { file = ["README.md"] }
