@@ -1,30 +1,27 @@
-from collections.abc import AsyncIterator
-from contextlib import AsyncExitStack, asynccontextmanager
+import logging
 
-import httpx
 from fastapi import FastAPI, status
 from fastapi.responses import RedirectResponse
 
+from .core import StatefulLifespan
+from .routes import get_router
 from .settings import Settings, get_settings
-from .state import RequestState
+
+logger = logging.getLogger(__name__)
 
 
 def create_app(*, settings: Settings | None = None) -> FastAPI:
     settings = settings or get_settings()
 
-    @asynccontextmanager
-    async def lifespan(app: FastAPI) -> AsyncIterator[RequestState]:
-        # Setup
-        async with AsyncExitStack() as stack:
-            http_client = await stack.enter_async_context(httpx.AsyncClient())
-
-            yield {"http_client": http_client}
+    stateful_lifespan = StatefulLifespan(settings)
 
     app = FastAPI(
         debug=settings.DEBUG,
         title=settings.API_NAME,
-        lifespan=lifespan,
+        lifespan=stateful_lifespan.lifespan,
     )
+
+    app.include_router(get_router(settings))
 
     @app.get("/", include_in_schema=False)
     def redirect_docs() -> RedirectResponse:

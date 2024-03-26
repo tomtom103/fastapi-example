@@ -17,6 +17,8 @@ dependencies = [
     "passlib[bcrypt]",
     "python-jose",
     "python-multipart",
+    "redis",
+    "ujson",
 ]
 
 [project.optional-dependencies]
@@ -33,6 +35,7 @@ test = [
     # type stubs / typeshed
     "types-python-jose",
     "types-passlib",
+    "types-ujson",
 ]
 
 cli = [

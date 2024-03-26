@@ -9,6 +9,11 @@ class Base(BaseSettings):
     )
 
 
+class RedisSettings(Base):
+    REDIS_HOST: str = "0.0.0.0"
+    REDIS_PORT: int = 2679
+
+
 class APISettings(Base):
     API_HOST: str = "0.0.0.0"
     API_PORT: int = 8000
@@ -17,7 +22,7 @@ class APISettings(Base):
     DEBUG: bool = True
 
 
-class Settings(APISettings): ...
+class Settings(APISettings, RedisSettings): ...
 
 
 @lru_cache(maxsize=1)
@@ -28,3 +33,8 @@ def get_settings() -> Settings:
 @lru_cache(maxsize=1)
 def get_api_settings() -> APISettings:
     return APISettings()
+
+
+@lru_cache(maxsize=1)
+def get_redis_settings() -> RedisSettings:
+    return RedisSettings()
