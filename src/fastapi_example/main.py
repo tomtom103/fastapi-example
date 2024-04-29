@@ -1,17 +1,23 @@
-import logging
+import logging.config
+from typing import Any
 
 from fastapi import FastAPI, status
 from fastapi.responses import RedirectResponse
 
 from .core import StatefulLifespan
+from .instrumentation import get_logging_config
 from .routes import get_router
 from .settings import Settings, get_settings
 
-logger = logging.getLogger(__name__)
 
-
-def create_app(*, settings: Settings | None = None) -> FastAPI:
+def get_app(
+    *, settings: Settings | None = None, log_config: dict[str, Any] | None = None
+) -> FastAPI:
     settings = settings or get_settings()
+
+    if log_config is None:
+        log_config = get_logging_config(settings)
+        logging.config.dictConfig(log_config)
 
     stateful_lifespan = StatefulLifespan(settings)
 

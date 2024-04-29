@@ -7,7 +7,17 @@ try:
 except ImportError:
     import json as ujson  # type: ignore[no-redef]
 
+import logging
+from typing import Any
+
+import ujson
+from fastapi.responses import (
+    JSONResponse as _JSONResponse,
+)
+
 from .state import RequestState
+
+logger = logging.getLogger(__name__)
 
 
 class Request(_Request):
@@ -43,3 +53,17 @@ class Request(_Request):
             # store info
             self._state = RequestState(self.scope["state"])
         return cast(RequestState, self._state)
+
+
+class JSONResponse(_JSONResponse):
+    """
+    JSON response using the high-performance ujson library to serialize data to JSON.
+    """
+
+    def render(self, content: Any) -> bytes:
+        return ujson.dumps(
+            content,
+            ensure_ascii=False,
+            allow_nan=False,
+            separators=(",", ":"),
+        ).encode("utf-8")
