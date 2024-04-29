@@ -9,6 +9,7 @@ description = "Production-ready API template"
 authors = [ { name = "Thomas Caron", email = "thomas.caron00@gmail.com" } ]
 requires-python = ">=3.10,<4"
 dependencies = [
+    # API
     "fastapi[all]",
     "httpx",
     "pydantic",
@@ -19,6 +20,8 @@ dependencies = [
     "python-multipart",
     "redis",
     "ujson",
+    # Instrumentation
+    "prometheus-client",
 ]
 
 [project.optional-dependencies]

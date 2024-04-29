@@ -6,6 +6,7 @@ import httpx
 from fastapi import FastAPI
 from starlette.datastructures import State
 
+from fastapi_example.instrumentation import prometheus
 from fastapi_example.settings import Settings
 
 
@@ -19,6 +20,8 @@ class StatefulLifespan:
 
     @asynccontextmanager
     async def lifespan(self, app: FastAPI) -> AsyncIterator[LifespanState]:
+        prometheus.instrument(app)
+
         async with AsyncExitStack() as stack:
             http_client = await stack.enter_async_context(httpx.AsyncClient())
 
