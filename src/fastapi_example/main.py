@@ -1,30 +1,38 @@
-import logging.config
-from typing import Any
-
 from fastapi import FastAPI, status
 from fastapi.responses import RedirectResponse
+from starlette.middleware import Middleware
+from starlette.middleware.cors import CORSMiddleware
+from starlette.middleware.gzip import GZipMiddleware
+from starlette.routing import Route
 
 from .core import StatefulLifespan
-from .instrumentation import get_logging_config
 from .routes import get_router
 from .settings import Settings, get_settings
 
 
 def get_app(
-    *, settings: Settings | None = None, log_config: dict[str, Any] | None = None
+    *,
+    settings: Settings | None = None,
 ) -> FastAPI:
     settings = settings or get_settings()
-
-    if log_config is None:
-        log_config = get_logging_config(settings)
-        logging.config.dictConfig(log_config)
-
-    stateful_lifespan = StatefulLifespan(settings)
 
     app = FastAPI(
         debug=settings.DEBUG,
         title=settings.API_NAME,
-        lifespan=stateful_lifespan.lifespan,
+        lifespan=StatefulLifespan(settings),
+        middleware=[
+            Middleware(
+                CORSMiddleware,
+                allow_headers="*",
+                allow_methods="*",
+                allow_origins="*",
+            ),
+            Middleware(
+                GZipMiddleware,
+                minimum_size=500,
+                compresslevel=9,
+            ),
+        ],
     )
 
     app.include_router(get_router(settings))

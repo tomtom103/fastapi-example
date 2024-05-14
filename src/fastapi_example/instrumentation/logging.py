@@ -1,10 +1,10 @@
-from typing import Any
+import logging.config
 
 from fastapi_example.settings import LoggingSettings
 
 
-def get_logging_config(settings: LoggingSettings) -> dict[str, Any]:
-    return {
+def setup_logging(settings: LoggingSettings) -> None:
+    logging_config = {
         "version": 1,
         "disable_existing_loggers": False,
         "formatters": {
@@ -26,3 +26,5 @@ def get_logging_config(settings: LoggingSettings) -> dict[str, Any]:
             "uvicorn.access": {"level": "WARN", "handlers": ["console"]},
         },
     }
+
+    return logging.config.dictConfig(logging_config)
